@@ -40,25 +40,25 @@ abstract class SyntaxHighlighter {
     ) {
         val matcher = pattern.matcher(text)
         while (matcher.find()) {
-            text.setSpan(
-                ForegroundColorSpan(color),
-                matcher.start(), matcher.end(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            if (bold) {
-                text.setSpan(
-                    StyleSpan(Typeface.BOLD),
-                    matcher.start(), matcher.end(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-            if (italic) {
-                text.setSpan(
-                    StyleSpan(Typeface.ITALIC),
-                    matcher.start(), matcher.end(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
+            colorRange(text, matcher.start(), matcher.end(), color, bold, italic)
+        }
+    }
+
+    /** Colors one already-known [start, end) range, optionally also making it bold/italic. */
+    protected fun colorRange(
+        text: Editable,
+        start: Int,
+        end: Int,
+        color: Int,
+        bold: Boolean = false,
+        italic: Boolean = false
+    ) {
+        text.setSpan(ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if (bold) {
+            text.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        if (italic) {
+            text.setSpan(StyleSpan(Typeface.ITALIC), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 

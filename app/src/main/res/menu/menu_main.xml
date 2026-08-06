@@ -25,12 +25,16 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_find"
-        android:title="@string/find_and_replace"
+        android:id="@+id/action_search"
+        android:title="@string/search"
         android:icon="@drawable/ic_search"
         app:showAsAction="ifRoom" />
 
     <!-- Overflow menu items -->
+    <item
+        android:id="@+id/action_find"
+        android:title="@string/find_and_replace" />
+
     <item
         android:id="@+id/action_new"
         android:title="@string/new_file" />

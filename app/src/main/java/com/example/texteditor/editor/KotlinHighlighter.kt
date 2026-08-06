@@ -19,15 +19,34 @@ class KotlinHighlighter(context: Context) : SyntaxHighlighter() {
     private val keywordPattern = Pattern.compile("\\b(" + keywords.joinToString("|") + ")\\b")
     private val numberPattern = Pattern.compile("\\b\\d+(\\.\\d+)?[fFL]?\\b")
     private val annotationPattern = Pattern.compile("@\\w+")
-    private val stringPattern = Pattern.compile("\"\"\"[\\s\\S]*?\"\"\"|\"(\\\\.|[^\"\\\\\\n])*\"|'(\\\\.|[^'\\\\\\n])*'")
-    private val commentPattern = Pattern.compile("//.*|/\\*[\\s\\S]*?\\*/")
+
+    // Strings and comments are matched together, as ALTERNATIVES of one pattern, so the regex
+    // engine claims each character range only once. This stops a "//" that occurs inside a
+    // string literal (e.g. a URL like "https://example.com") from later being re-matched and
+    // re-colored as a comment by a separate, context-blind comment pattern.
+    private val stringOrCommentPattern = Pattern.compile(
+        "\"\"\"[\\s\\S]*?\"\"\"" +               // triple-quoted strings
+            "|\"(\\\\.|[^\"\\\\\\n])*\"" +       // double-quoted strings
+            "|'(\\\\.|[^'\\\\\\n])*'" +          // char literals
+            "|//.*" +                             // line comments
+            "|/\\*[\\s\\S]*?\\*/"                 // block comments
+    )
 
     override fun applyPatterns(text: Editable) {
         colorMatches(text, keywordPattern, KEYWORD_COLOR, bold = true)
         colorMatches(text, numberPattern, NUMBER_COLOR)
         colorMatches(text, annotationPattern, ANNOTATION_COLOR)
-        colorMatches(text, stringPattern, STRING_COLOR)
-        colorMatches(text, commentPattern, COMMENT_COLOR, italic = true)
+        colorStringsAndComments(text)
+    }
+
+    /** Colors each match of [stringOrCommentPattern] as a comment or a string, depending on which it is. */
+    private fun colorStringsAndComments(text: Editable) {
+        val matcher = stringOrCommentPattern.matcher(text)
+        while (matcher.find()) {
+            val matched = matcher.group()
+            val isComment = matched.startsWith("//") || matched.startsWith("/*")
+            colorRange(text, matcher.start(), matcher.end(), if (isComment) COMMENT_COLOR else STRING_COLOR, italic = isComment)
+        }
     }
 
     companion object {

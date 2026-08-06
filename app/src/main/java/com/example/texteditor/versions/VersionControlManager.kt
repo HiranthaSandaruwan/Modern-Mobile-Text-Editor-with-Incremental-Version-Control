@@ -1,25 +1,31 @@
 package com.example.texteditor.versions
 
+import androidx.room.withTransaction
+import com.example.texteditor.data.db.AppDatabase
 import com.example.texteditor.data.db.FileVersion
 import com.example.texteditor.data.db.TrackedFile
-import com.example.texteditor.data.db.VersionDao
 import com.github.difflib.DiffUtils
 import com.github.difflib.UnifiedDiffUtils
 
 /**
  * Delta-based version control system.
  */
-class VersionControlManager(private val dao: VersionDao) {
+class VersionControlManager(private val db: AppDatabase) {
+
+    private val dao = db.versionDao()
 
     data class SnapshotResult(val created: Boolean, val versionNumber: Int)
     data class DiffLine(val type: Type, val text: String) {
         enum class Type { CONTEXT, ADDED, REMOVED }
     }
 
-    suspend fun getOrCreateFile(name: String): TrackedFile {
-        dao.getFileByName(name)?.let { return it }
+    // Wrapped in a transaction: two concurrent calls for the same brand-new file name could
+    // otherwise both see "no row yet" and both try to insert it, throwing on the unique index
+    // on TrackedFile.name. The transaction serializes them so only one insert happens.
+    suspend fun getOrCreateFile(name: String): TrackedFile = db.withTransaction {
+        dao.getFileByName(name)?.let { return@withTransaction it }
         dao.insertFile(TrackedFile(name = name))
-        return dao.getFileByName(name)!!
+        dao.getFileByName(name)!!
     }
 
     suspend fun setReadOnly(name: String, readOnly: Boolean) {
@@ -37,7 +43,12 @@ class VersionControlManager(private val dao: VersionDao) {
         return dao.getVersionsForFile(file.id)
     }
 
-    suspend fun createSnapshot(fileName: String, label: String, currentText: String): SnapshotResult {
+    // Wrapped in a transaction so the "read the current version count, then insert the next
+    // version number" sequence is atomic. Without this, two near-simultaneous calls (e.g. a
+    // fast double-tap on "Create snapshot") could both read the same count and insert two rows
+    // with the same versionNumber, corrupting the patch chain that rebuildText() relies on. The
+    // unique index on (fileId, versionNumber) is a second line of defense if that ever happens.
+    suspend fun createSnapshot(fileName: String, label: String, currentText: String): SnapshotResult = db.withTransaction {
         val file = getOrCreateFile(fileName)
         val versions = dao.getVersionsForFile(file.id)
 
@@ -46,11 +57,11 @@ class VersionControlManager(private val dao: VersionDao) {
                 fileId = file.id, versionNumber = 1, label = label,
                 createdAt = System.currentTimeMillis(), baseContent = currentText, patchText = null
             ))
-            return SnapshotResult(true, 1)
+            return@withTransaction SnapshotResult(true, 1)
         }
 
         val previousText = rebuildText(versions, versions.size)
-        if (previousText == currentText) return SnapshotResult(false, versions.size)
+        if (previousText == currentText) return@withTransaction SnapshotResult(false, versions.size)
 
         val newNumber = versions.size + 1
         dao.insertVersion(FileVersion(
@@ -58,7 +69,7 @@ class VersionControlManager(private val dao: VersionDao) {
             createdAt = System.currentTimeMillis(), baseContent = null,
             patchText = createPatchText(previousText, currentText)
         ))
-        return SnapshotResult(true, newNumber)
+        SnapshotResult(true, newNumber)
     }
 
     suspend fun buildVersionText(fileName: String, versionNumber: Int): String {

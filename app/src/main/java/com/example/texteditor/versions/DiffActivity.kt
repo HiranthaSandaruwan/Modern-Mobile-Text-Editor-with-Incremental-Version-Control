@@ -54,18 +54,22 @@ class DiffActivity : AppCompatActivity() {
         supportActionBar?.subtitle = label
 
         val diffText = findViewById<TextView>(R.id.diff_text)
-        val versionManager = VersionControlManager(AppDatabase.get(this).versionDao())
+        val versionManager = VersionControlManager(AppDatabase.get(this))
 
         lifecycleScope.launch {
-            // Rebuild both versions and calculate the diff on a background thread.
-            val spannable = withContext(Dispatchers.Default) {
-                val oldText =
-                    if (versionNumber == 1) ""
-                    else versionManager.buildVersionText(fileName, versionNumber - 1)
-                val newText = versionManager.buildVersionText(fileName, versionNumber)
-                buildColoredDiff(versionManager.buildDiffLines(oldText, newText))
+            try {
+                // Rebuild both versions and calculate the diff on a background thread.
+                val spannable = withContext(Dispatchers.Default) {
+                    val oldText =
+                        if (versionNumber == 1) ""
+                        else versionManager.buildVersionText(fileName, versionNumber - 1)
+                    val newText = versionManager.buildVersionText(fileName, versionNumber)
+                    buildColoredDiff(versionManager.buildDiffLines(oldText, newText))
+                }
+                diffText.text = spannable
+            } catch (e: Exception) {
+                diffText.text = getString(R.string.diff_load_failed)
             }
-            diffText.text = spannable
         }
     }
 

@@ -43,7 +43,7 @@ class VersionHistoryActivity : AppCompatActivity() {
         }
 
         fileName = intent.getStringExtra(EXTRA_FILE_NAME) ?: ""
-        versionManager = VersionControlManager(AppDatabase.get(this).versionDao())
+        versionManager = VersionControlManager(AppDatabase.get(this))
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

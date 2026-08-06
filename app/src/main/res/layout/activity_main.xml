@@ -22,6 +22,42 @@
             app:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.Material3.Light" />
 
+        <!-- Standalone "Search" panel: search only, no replace fields. Separate from the
+             Find & Replace panel below so plain searching has its own dedicated entry point. -->
+        <LinearLayout
+            android:id="@+id/plain_search_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/panel_background"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/plain_search_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_search"
+                android:inputType="text"
+                android:maxLines="1"
+                android:importantForAutofill="no" />
+
+            <Button
+                android:id="@+id/btn_plain_search_next"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/find_next" />
+
+            <Button
+                android:id="@+id/btn_close_plain_search"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/close" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/search_panel"
             android:layout_width="match_parent"

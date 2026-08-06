@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var editor: EditText
     private lateinit var statusText: TextView
+    private lateinit var plainSearchPanel: View
+    private lateinit var plainSearchInput: EditText
     private lateinit var searchPanel: View
     private lateinit var searchInput: EditText
     private lateinit var replaceInput: EditText
@@ -92,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         repository = FileRepository(this)
         recentFiles = RecentFilesStore(this)
-        versionManager = VersionControlManager(AppDatabase.get(this).versionDao())
+        versionManager = VersionControlManager(AppDatabase.get(this))
         kotlinHighlighter = KotlinHighlighter(this)
         markdownHighlighter = MarkdownHighlighter()
         markwon = Markwon.create(this)
@@ -102,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         editor.isHorizontalScrollBarEnabled = true
 
         setupTextWatcher()
+        setupPlainSearchPanel()
         setupSearchPanel()
         setupBackHandler()
 
@@ -162,6 +165,8 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         editor = findViewById(R.id.editor)
         statusText = findViewById(R.id.status_text)
+        plainSearchPanel = findViewById(R.id.plain_search_panel)
+        plainSearchInput = findViewById(R.id.plain_search_input)
         searchPanel = findViewById(R.id.search_panel)
         searchInput = findViewById(R.id.search_input)
         replaceInput = findViewById(R.id.replace_input)
@@ -235,6 +240,7 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 when {
                     drawerLayout.isDrawerOpen(findViewById(R.id.drawer_panel)) -> drawerLayout.closeDrawers()
+                    plainSearchPanel.visibility == View.VISIBLE -> plainSearchPanel.visibility = View.GONE
                     searchPanel.visibility == View.VISIBLE -> searchPanel.visibility = View.GONE
                     isModified -> AlertDialog.Builder(this@MainActivity)
                         .setTitle(R.string.unsaved_changes_title)
@@ -256,6 +262,9 @@ class MainActivity : AppCompatActivity() {
         menu.findItem(R.id.action_word_wrap).isChecked = wordWrapEnabled
         menu.findItem(R.id.action_read_only).isChecked = isReadOnly
         menu.findItem(R.id.action_format_code).isVisible = isKotlinFile()
+        menu.findItem(R.id.action_undo).isEnabled = !isReadOnly
+        menu.findItem(R.id.action_redo).isEnabled = !isReadOnly
+        menu.findItem(R.id.action_snapshot).isEnabled = !isReadOnly
         val preview = menu.findItem(R.id.action_markdown_preview)
         preview.isEnabled = isMarkdownFile()
         preview.isChecked = isPreviewVisible
@@ -268,6 +277,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_undo -> undo()
             R.id.action_redo -> redo()
             R.id.action_save -> saveFile()
+            R.id.action_search -> togglePlainSearchPanel()
             R.id.action_find -> toggleSearchPanel()
             R.id.action_new -> confirmUnsavedChanges { showNewFileDialog() }
             R.id.action_open -> confirmUnsavedChanges { showOpenFileDialog() }
@@ -313,6 +323,7 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.IO) { repository.saveText(name, editor.text.toString(), currentEncoding) }
             isModified = false
             updateStatusBar()
+            autoSave.clearBackup()
             toast(getString(R.string.file_saved, name))
         }
     }
@@ -342,6 +353,9 @@ class MainActivity : AppCompatActivity() {
         val input = view.findViewById<EditText>(R.id.input_file_name)
         val spinner = view.findViewById<Spinner>(R.id.spinner_encoding)
         spinner.adapter = ArrayAdapter.createFromResource(this, R.array.encodings, android.R.layout.simple_spinner_dropdown_item)
+        val encodings = resources.getStringArray(R.array.encodings)
+        val currentIndex = encodings.indexOf(currentEncoding.name())
+        if (currentIndex >= 0) spinner.setSelection(currentIndex)
         input.setText(currentFileName ?: "")
 
         AlertDialog.Builder(this).setTitle(R.string.save_as).setView(view).setPositiveButton(R.string.save) { _, _ ->
@@ -360,6 +374,7 @@ class MainActivity : AppCompatActivity() {
                 applyHighlighting()
                 updateStatusBar()
                 invalidateOptionsMenu()
+                autoSave.clearBackup()
                 toast(getString(R.string.file_saved, name))
             }
         }.setNegativeButton(android.R.string.cancel, null).show()
@@ -390,8 +405,14 @@ class MainActivity : AppCompatActivity() {
         recentList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, recentFiles.getAll())
     }
 
-    private fun undo() = if (!undoManager.canUndo()) toast(getString(R.string.nothing_to_undo)) else undoManager.undo(editor.text)
-    private fun redo() = if (!undoManager.canRedo()) toast(getString(R.string.nothing_to_redo)) else undoManager.redo(editor.text)
+    private fun undo() {
+        if (isReadOnly) { toast(getString(R.string.file_is_read_only)); return }
+        if (!undoManager.canUndo()) toast(getString(R.string.nothing_to_undo)) else undoManager.undo(editor.text)
+    }
+    private fun redo() {
+        if (isReadOnly) { toast(getString(R.string.file_is_read_only)); return }
+        if (!undoManager.canRedo()) toast(getString(R.string.nothing_to_redo)) else undoManager.redo(editor.text)
+    }
 
     private fun scheduleHighlighting() {
         highlightHandler.removeCallbacks(highlightRunnable)
@@ -410,6 +431,23 @@ class MainActivity : AppCompatActivity() {
     private fun isKotlinFile() = currentFileName?.let { it.endsWith(".kt") || it.endsWith(".kts") } ?: false
     private fun isMarkdownFile() = currentFileName?.let { it.endsWith(".md") || it.endsWith(".markdown") } ?: false
 
+    /**
+     * Standalone "Search" panel - lets the user search for a word or a whole sentence in the
+     * file without the Find & Replace panel's replace controls getting in the way.
+     */
+    private fun setupPlainSearchPanel() {
+        findViewById<View>(R.id.btn_plain_search_next).setOnClickListener { searchNext() }
+        findViewById<View>(R.id.btn_close_plain_search).setOnClickListener { plainSearchPanel.visibility = View.GONE }
+    }
+
+    private fun togglePlainSearchPanel() {
+        if (searchPanel.visibility == View.VISIBLE) searchPanel.visibility = View.GONE
+        plainSearchPanel.visibility = if (plainSearchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+        if (plainSearchPanel.visibility == View.VISIBLE) plainSearchInput.requestFocus()
+    }
+
+    private fun searchNext() = performSearch(plainSearchInput.text.toString())
+
     private fun setupSearchPanel() {
         findViewById<View>(R.id.btn_find_next).setOnClickListener { findNext() }
         findViewById<View>(R.id.btn_replace).setOnClickListener { replaceCurrent() }
@@ -418,12 +456,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleSearchPanel() {
+        if (plainSearchPanel.visibility == View.VISIBLE) plainSearchPanel.visibility = View.GONE
         searchPanel.visibility = if (searchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         if (searchPanel.visibility == View.VISIBLE) searchInput.requestFocus()
     }
 
-    private fun findNext() {
-        val query = searchInput.text.toString()
+    private fun findNext() = performSearch(searchInput.text.toString())
+
+    /** Selects the next match of [query] in the editor, wrapping around to the start if needed. */
+    private fun performSearch(query: String) {
         if (query.isEmpty()) return
         val content = editor.text.toString()
         var from = editor.selectionEnd
@@ -440,9 +481,14 @@ class MainActivity : AppCompatActivity() {
         if (query.isEmpty()) return
         val start = editor.selectionStart
         val end = editor.selectionEnd
-        if (editor.text.subSequence(start, end).toString().equals(query, true)) {
-            editor.text.replace(start, end, replaceInput.text.toString())
+        val hasMatchSelected = end > start && editor.text.subSequence(start, end).toString().equals(query, true)
+        if (!hasMatchSelected) {
+            // Nothing matching is selected yet (e.g. the user typed a query and hit
+            // Replace without ever pressing Find next) - select the next match first.
+            findNext()
+            return
         }
+        editor.text.replace(start, end, replaceInput.text.toString())
         findNext()
     }
 
@@ -452,8 +498,10 @@ class MainActivity : AppCompatActivity() {
         if (query.isEmpty()) return
         val content = editor.text.toString()
         val replaced = content.replace(query, replaceInput.text.toString(), true)
-        if (content == replaced) toast(getString(R.string.no_matches, query))
-        else { editor.text.replace(0, editor.text.length, replaced); toast(getString(R.string.formatting_done)) }
+        if (content == replaced) { toast(getString(R.string.no_matches, query)); return }
+        val count = Regex(Regex.escape(query), RegexOption.IGNORE_CASE).findAll(content).count()
+        editor.text.replace(0, editor.text.length, replaced)
+        toast(getString(R.string.replaced_count, count))
     }
 
     private fun toggleWordWrap() {
@@ -512,17 +560,17 @@ class MainActivity : AppCompatActivity() {
             toast(getString(R.string.save_before_snapshot))
             return
         }
+        if (isReadOnly) { toast(getString(R.string.file_is_read_only)); return }
         val view = layoutInflater.inflate(R.layout.dialog_snapshot, null)
         val input = view.findViewById<EditText>(R.id.input_snapshot_label)
         AlertDialog.Builder(this).setTitle(R.string.create_snapshot).setView(view).setPositiveButton(R.string.create) { _, _ ->
             val label = input.text.toString().trim().ifEmpty { getString(R.string.snapshot_default_label) }
             lifecycleScope.launch {
                 val text = editor.text.toString()
-                if (!isReadOnly) {
-                    withContext(Dispatchers.IO) { repository.saveText(name, text, currentEncoding) }
-                    isModified = false
-                    updateStatusBar()
-                }
+                withContext(Dispatchers.IO) { repository.saveText(name, text, currentEncoding) }
+                isModified = false
+                updateStatusBar()
+                autoSave.clearBackup()
                 val result = versionManager.createSnapshot(name, label, text)
                 toast(if (result.created) getString(R.string.snapshot_created, result.versionNumber) else getString(R.string.snapshot_no_changes))
             }
@@ -547,6 +595,7 @@ class MainActivity : AppCompatActivity() {
                 setEditorText(text)
                 withContext(Dispatchers.IO) { repository.saveText(name, text, currentEncoding) }
                 updateStatusBar()
+                autoSave.clearBackup()
                 toast(getString(R.string.restored_version, versionNumber))
             } catch (e: Exception) { toast(getString(R.string.restore_failed)) }
         }
