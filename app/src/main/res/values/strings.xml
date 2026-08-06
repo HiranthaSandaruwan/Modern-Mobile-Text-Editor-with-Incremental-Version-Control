@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kotlin Text Editor</string>
+
+    <!-- Drawer / files -->
+    <string name="drawer_open">Open sidebar</string>
+    <string name="drawer_close">Close sidebar</string>
+    <string name="new_file">New file</string>
+    <string name="open_file">Open file</string>
+    <string name="recent_files">RECENT FILES</string>
+    <string name="no_files_yet">No files yet – create one first</string>
+    <string name="untitled">Untitled</string>
+    <string name="hint_file_name">File name (e.g. notes.md)</string>
+    <string name="invalid_file_name">Invalid file name</string>
+    <string name="file_already_exists">%1$s already exists</string>
+    <string name="error_opening_file">Could not open %1$s</string>
+
+    <!-- Editing / saving -->
+    <string name="editor_hint">Start typing, or open a file from the sidebar…</string>
+    <string name="save">Save</string>
+    <string name="save_as">Save as…</string>
+    <string name="file_saved">Saved %1$s</string>
+    <string name="encoding">Encoding</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="nothing_to_undo">Nothing to undo</string>
+    <string name="nothing_to_redo">Nothing to redo</string>
+    <string name="word_wrap">Word wrap</string>
+    <string name="read_only">Read-only</string>
+    <string name="file_is_read_only">This file is locked as read-only</string>
+    <string name="save_before_read_only">Save the file first to lock it</string>
+    <string name="markdown_preview">Markdown preview</string>
+    <string name="status_modified">Modified</string>
+    <string name="status_saved">Saved</string>
+    <string name="status_read_only">READ-ONLY</string>
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">The current file has unsaved changes. Discard them?</string>
+    <string name="exit_without_saving">Exit without saving?</string>
+    <string name="exit">Exit</string>
+    <string name="discard">Discard</string>
+    <string name="create">Create</string>
+    <string name="close">Close</string>
+
+    <!-- Search and replace -->
+    <string name="find_and_replace">Find &amp; replace</string>
+    <string name="hint_find">Find</string>
+    <string name="hint_replace">Replace with</string>
+    <string name="find_next">Find next</string>
+    <string name="replace">Replace</string>
+    <string name="replace_all">Replace all</string>
+    <string name="no_matches">No matches for \"%1$s\"</string>
+    <string name="replaced_count">Replaced %1$d occurrence(s)</string>
+
+    <!-- Version control -->
+    <string name="title_version_history">Version history</string>
+    <string name="title_diff">Changes</string>
+    <string name="create_snapshot">Create snapshot</string>
+    <string name="hint_snapshot_label">Snapshot name (e.g. \"added intro\")</string>
+    <string name="snapshot_default_label">Unnamed snapshot</string>
+    <string name="snapshot_created">Snapshot v%1$d created</string>
+    <string name="snapshot_no_changes">No changes since the last snapshot</string>
+    <string name="save_before_snapshot">Save the file first (Save as…)</string>
+    <string name="no_versions_yet">No snapshots yet.\nUse \"Create snapshot\" in the editor menu.</string>
+    <string name="version_title_format">Version %1$d — %2$s</string>
+    <string name="stored_as_base">Stored as: full text, %1$d characters (base version)</string>
+    <string name="stored_as_delta">Stored as: delta patch only, %1$d characters</string>
+    <string name="view_changes">View changes</string>
+    <string name="restore">Restore</string>
+    <string name="restore_title">Restore this version?</string>
+    <string name="restore_message">The file will be set back to version %1$d (%2$s). The current text will be replaced.</string>
+    <string name="restored_version">Restored version %1$d</string>
+    <string name="restore_failed">Could not restore this version</string>
+    <string name="diff_title_format">Changes in v%1$d</string>
+    <string name="legend_added">+ added</string>
+    <string name="legend_removed">− removed</string>
+
+    <!-- Crash recovery -->
+    <string name="recovery_title">Recovered unsaved work</string>
+    <string name="recovery_message">The app did not close normally last time. Unsaved text for \"%1$s\" was rescued by the auto-backup. Restore it?</string>
+    <string name="recovery_done">Unsaved text restored – remember to Save</string>
+
+    <!-- Encodings offered in "Save as" -->
+    <string-array name="encodings">
+        <item>UTF-8</item>
+        <item>UTF-16</item>
+        <item>ISO-8859-1</item>
+    </string-array>
+</resources>

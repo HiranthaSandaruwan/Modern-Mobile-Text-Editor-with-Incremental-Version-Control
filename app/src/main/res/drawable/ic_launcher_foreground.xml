@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher icon foreground: a white document with text lines -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- document body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,30 h26 l10,10 v38 h-36 Z" />
+    <!-- folded corner -->
+    <path
+        android:fillColor="#90CAF9"
+        android:pathData="M62,30 l10,10 h-10 Z" />
+    <!-- text lines -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M42,48 h24 v3 h-24 Z M42,55 h24 v3 h-24 Z M42,62 h16 v3 h-16 Z" />
+</vector>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Toolbar menu. Items with showAsAction="always" appear as icons;
+  the rest go into the "three dots" overflow menu.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_undo"
+        android:title="@string/undo"
+        android:icon="@drawable/ic_undo"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_redo"
+        android:title="@string/redo"
+        android:icon="@drawable/ic_redo"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_save"
+        android:title="@string/save"
+        android:icon="@drawable/ic_save"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_find"
+        android:title="@string/find_and_replace"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom" />
+
+    <!-- Overflow menu items -->
+    <item
+        android:id="@+id/action_new"
+        android:title="@string/new_file" />
+
+    <item
+        android:id="@+id/action_open"
+        android:title="@string/open_file" />
+
+    <item
+        android:id="@+id/action_save_as"
+        android:title="@string/save_as" />
+
+    <item
+        android:id="@+id/action_snapshot"
+        android:title="@string/create_snapshot" />
+
+    <item
+        android:id="@+id/action_history"
+        android:title="@string/title_version_history" />
+
+    <item
+        android:id="@+id/action_markdown_preview"
+        android:title="@string/markdown_preview"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/action_word_wrap"
+        android:title="@string/word_wrap"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/action_read_only"
+        android:title="@string/read_only"
+        android:checkable="true" />
+
+</menu>

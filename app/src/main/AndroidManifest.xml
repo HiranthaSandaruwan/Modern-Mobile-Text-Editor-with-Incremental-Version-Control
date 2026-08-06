@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- No permissions are needed: all files live in the app's private storage. -->
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.KotlinTextEditor">
+
+        <!-- Main editor screen (launcher activity) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- List of snapshots for the current file -->
+        <activity
+            android:name=".versions.VersionHistoryActivity"
+            android:exported="false"
+            android:label="@string/title_version_history" />
+
+        <!-- Line-by-line diff view of one snapshot -->
+        <activity
+            android:name=".versions.DiffActivity"
+            android:exported="false"
+            android:label="@string/title_diff" />
+    </application>
+
+</manifest>
