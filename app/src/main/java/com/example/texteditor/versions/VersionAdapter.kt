@@ -9,14 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.texteditor.R
 import com.example.texteditor.data.db.FileVersion
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
-/**
- * RecyclerView adapter that displays one card per snapshot.
- * The two button clicks are passed back to VersionHistoryActivity
- * through the [onViewDiff] and [onRestore] callbacks.
- */
 class VersionAdapter(
     private val onViewDiff: (FileVersion) -> Unit,
     private val onRestore: (FileVersion) -> Unit
@@ -39,31 +33,23 @@ class VersionAdapter(
         val restoreButton: Button = view.findViewById(R.id.btn_restore)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VersionViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_version, parent, false)
-        return VersionViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VersionViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_version, parent, false)
+    )
 
     override fun onBindViewHolder(holder: VersionViewHolder, position: Int) {
         val version = items[position]
         val context = holder.itemView.context
 
-        holder.title.text =
-            context.getString(R.string.version_title_format, version.versionNumber, version.label)
+        holder.title.text = context.getString(R.string.version_title_format, version.versionNumber, version.label)
         holder.date.text = dateFormat.format(Date(version.createdAt))
-
-        // Show HOW this version is stored - nice to demonstrate the
-        // "no duplication" delta storage in the viva/demo.
-        holder.storage.text = if (version.baseContent != null) {
+        holder.storage.text = if (version.baseContent != null) 
             context.getString(R.string.stored_as_base, version.baseContent.length)
-        } else {
-            context.getString(R.string.stored_as_delta, version.patchText?.length ?: 0)
-        }
+        else context.getString(R.string.stored_as_delta, version.patchText?.length ?: 0)
 
         holder.diffButton.setOnClickListener { onViewDiff(version) }
         holder.restoreButton.setOnClickListener { onRestore(version) }
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount() = items.size
 }

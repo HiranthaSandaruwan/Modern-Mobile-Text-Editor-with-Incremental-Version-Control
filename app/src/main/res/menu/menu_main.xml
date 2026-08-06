@@ -57,6 +57,10 @@
         android:checkable="true" />
 
     <item
+        android:id="@+id/action_format_code"
+        android:title="@string/format_code" />
+
+    <item
         android:id="@+id/action_word_wrap"
         android:title="@string/word_wrap"
         android:checkable="true" />

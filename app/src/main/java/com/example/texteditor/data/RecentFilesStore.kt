@@ -3,10 +3,7 @@ package com.example.texteditor.data
 import android.content.Context
 
 /**
- * Remembers the recently opened file names (most recent first).
- *
- * The list is stored in SharedPreferences as one string joined with
- * newline characters, which is safe because file names cannot contain '\n'.
+ * Remembers the recently opened file names.
  */
 class RecentFilesStore(context: Context) {
 
@@ -17,7 +14,6 @@ class RecentFilesStore(context: Context) {
         return if (raw.isEmpty()) emptyList() else raw.split("\n")
     }
 
-    /** Adds a file to the top of the list (removing duplicates, max 10 entries). */
     fun add(name: String) {
         val updated = (listOf(name) + getAll().filter { it != name }).take(MAX_ENTRIES)
         prefs.edit().putString(KEY, updated.joinToString("\n")).apply()

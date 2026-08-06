@@ -30,6 +30,8 @@
     <string name="file_is_read_only">This file is locked as read-only</string>
     <string name="save_before_read_only">Save the file first to lock it</string>
     <string name="markdown_preview">Markdown preview</string>
+    <string name="format_code">Format Kotlin code</string>
+    <string name="formatting_done">Code formatted</string>
     <string name="status_modified">Modified</string>
     <string name="status_saved">Saved</string>
     <string name="status_read_only">READ-ONLY</string>

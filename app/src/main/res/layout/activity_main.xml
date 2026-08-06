@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Main screen layout:
-  DrawerLayout = a container whose second child slides in from the side.
-    1st child: the main content (toolbar, search panel, status bar, editor)
-    2nd child: the sidebar with New/Open buttons and the recent-files list
--->
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- ============ Main content ============ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,9 +19,9 @@
             android:background="@color/primary"
             app:title="@string/app_name"
             app:titleTextColor="@color/white"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            app:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.Material3.Light" />
 
-        <!-- Search and replace panel (hidden until the user taps the search icon) -->
         <LinearLayout
             android:id="@+id/search_panel"
             android:layout_width="match_parent"
@@ -99,7 +92,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Status bar: file name, modified/saved, read-only, encoding -->
         <TextView
             android:id="@+id/status_text"
             android:layout_width="match_parent"
@@ -112,8 +104,6 @@
             android:textSize="12sp"
             android:textColor="@color/status_text" />
 
-        <!-- The editor and the Markdown preview share the same area;
-             only one of them is visible at a time. -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -152,7 +142,6 @@
         </FrameLayout>
     </LinearLayout>
 
-    <!-- ============ Sidebar (navigation drawer) ============ -->
     <LinearLayout
         android:id="@+id/drawer_panel"
         android:layout_width="280dp"
