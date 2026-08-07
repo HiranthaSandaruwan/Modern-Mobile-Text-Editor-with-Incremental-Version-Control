@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previewScroll: ScrollView
     private lateinit var previewText: TextView
     private lateinit var recentList: ListView
+    private lateinit var allFilesList: ListView
 
     private lateinit var repository: FileRepository
     private lateinit var recentFiles: RecentFilesStore
@@ -173,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         previewScroll = findViewById(R.id.preview_scroll)
         previewText = findViewById(R.id.preview_text)
         recentList = findViewById(R.id.recent_list)
+        allFilesList = findViewById(R.id.all_files_list)
     }
 
     private fun setupToolbarAndDrawer() {
@@ -193,6 +195,11 @@ class MainActivity : AppCompatActivity() {
         }
         recentList.setOnItemClickListener { _, _, position, _ ->
             val name = recentList.adapter.getItem(position) as String
+            drawerLayout.closeDrawers()
+            confirmUnsavedChanges { openFile(name) }
+        }
+        allFilesList.setOnItemClickListener { _, _, position, _ ->
+            val name = allFilesList.adapter.getItem(position) as String
             drawerLayout.closeDrawers()
             confirmUnsavedChanges { openFile(name) }
         }
@@ -276,6 +283,8 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_undo -> undo()
             R.id.action_redo -> redo()
+            R.id.action_cut -> editor.onTextContextMenuItem(android.R.id.cut)
+            R.id.action_paste -> editor.onTextContextMenuItem(android.R.id.paste)
             R.id.action_save -> saveFile()
             R.id.action_search -> togglePlainSearchPanel()
             R.id.action_find -> toggleSearchPanel()
@@ -402,7 +411,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshRecentList() {
-        recentList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, recentFiles.getAll())
+        val allRecent = recentFiles.getAll()
+        recentList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, allRecent.take(5))
+        allFilesList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, repository.listFileNames())
     }
 
     private fun undo() {
@@ -431,16 +442,13 @@ class MainActivity : AppCompatActivity() {
     private fun isKotlinFile() = currentFileName?.let { it.endsWith(".kt") || it.endsWith(".kts") } ?: false
     private fun isMarkdownFile() = currentFileName?.let { it.endsWith(".md") || it.endsWith(".markdown") } ?: false
 
-    /**
-     * Standalone "Search" panel - lets the user search for a word or a whole sentence in the
-     * file without the Find & Replace panel's replace controls getting in the way.
-     */
     private fun setupPlainSearchPanel() {
         findViewById<View>(R.id.btn_plain_search_next).setOnClickListener { searchNext() }
         findViewById<View>(R.id.btn_close_plain_search).setOnClickListener { plainSearchPanel.visibility = View.GONE }
     }
 
     private fun togglePlainSearchPanel() {
+        if (isPreviewVisible) hidePreview()
         if (searchPanel.visibility == View.VISIBLE) searchPanel.visibility = View.GONE
         plainSearchPanel.visibility = if (plainSearchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         if (plainSearchPanel.visibility == View.VISIBLE) plainSearchInput.requestFocus()
@@ -456,6 +464,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleSearchPanel() {
+        if (isPreviewVisible) hidePreview()
         if (plainSearchPanel.visibility == View.VISIBLE) plainSearchPanel.visibility = View.GONE
         searchPanel.visibility = if (searchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         if (searchPanel.visibility == View.VISIBLE) searchInput.requestFocus()
@@ -463,7 +472,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun findNext() = performSearch(searchInput.text.toString())
 
-    /** Selects the next match of [query] in the editor, wrapping around to the start if needed. */
     private fun performSearch(query: String) {
         if (query.isEmpty()) return
         val content = editor.text.toString()
@@ -483,8 +491,6 @@ class MainActivity : AppCompatActivity() {
         val end = editor.selectionEnd
         val hasMatchSelected = end > start && editor.text.subSequence(start, end).toString().equals(query, true)
         if (!hasMatchSelected) {
-            // Nothing matching is selected yet (e.g. the user typed a query and hit
-            // Replace without ever pressing Find next) - select the next match first.
             findNext()
             return
         }

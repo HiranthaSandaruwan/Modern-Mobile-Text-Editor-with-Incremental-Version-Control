@@ -19,6 +19,18 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_cut"
+        android:title="@string/cut"
+        android:icon="@drawable/ic_cut"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_paste"
+        android:title="@string/paste"
+        android:icon="@drawable/ic_paste"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_save"
         android:title="@string/save"
         android:icon="@drawable/ic_save"

@@ -8,6 +8,7 @@
     <string name="new_file">New file</string>
     <string name="open_file">Open file</string>
     <string name="recent_files">RECENT FILES</string>
+    <string name="all_files">ALL FILES</string>
     <string name="no_files_yet">No files yet – create one first</string>
     <string name="untitled">Untitled</string>
     <string name="hint_file_name">File name (e.g. notes.md)</string>
@@ -23,6 +24,8 @@
     <string name="encoding">Encoding</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
+    <string name="cut">Cut</string>
+    <string name="paste">Paste</string>
     <string name="nothing_to_undo">Nothing to undo</string>
     <string name="nothing_to_redo">Nothing to redo</string>
     <string name="word_wrap">Word wrap</string>
