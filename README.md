@@ -1,4 +1,4 @@
-# Kotlin Text Editor — IS2205 Mini-Project
+# Kotlin Text Editor - IS2205 Mini-Project
 
 A lightweight mobile text editor for developers and technical writers, written in
 **pure Kotlin** (native Android, XML layouts). It supports Kotlin & Markdown syntax
@@ -9,10 +9,10 @@ highlighting, local file management, crash recovery, undo/redo, and a
 
 ## 1. How to build and run
 
-1. Open **Android Studio** → *Open* → select the `KotlinTextEditor` folder.
+1. Open **Android Studio** -> *Open* -> select the `KotlinTextEditor` folder.
 2. Wait for the Gradle sync to finish (needs internet the first time).
 3. Press **Run ▶** with an emulator or a connected phone (Android 8.0 / API 26 or newer).
-4. To create the APK for submission: **Build → Build App Bundle(s) / APK(s) → Build APK(s)**.
+4. To create the APK for submission: **Build -> Build App Bundle(s) / APK(s) -> Build APK(s)**.
    The APK appears in `app/build/outputs/apk/debug/app-debug.apk`.
 
 On first launch the app creates two demo files (`Welcome.md`, `HelloWorld.kt`)
@@ -64,25 +64,25 @@ Libraries used (see `app/build.gradle.kts`):
 ## 3. How each requirement is implemented
 
 ### Editor engine & UI
-- **New / Open / Save / Save As / Recent files** — `FileRepository` stores all documents
+- **New / Open / Save / Save As / Recent files** - `FileRepository` stores all documents
   in the app's private internal storage (`files/documents/`), so no permissions are
   needed. The sidebar (navigation drawer) lists recent files (`RecentFilesStore`).
   *Save As* offers an **encoding** choice (UTF-8 / UTF-16 / ISO-8859-1); the chosen
   encoding is remembered per file in the database and the spinner now pre-selects the
   file's current encoding when re-saving.
-- **Word wrap toggle** — `editor.setHorizontallyScrolling(...)` switches between
+- **Word wrap toggle** - `editor.setHorizontallyScrolling(...)` switches between
   wrapping and horizontal scrolling.
-- **Search** — a dedicated toolbar action opens a lightweight **Search** panel (word or
+- **Search** - a dedicated toolbar action opens a lightweight **Search** panel (word or
   full-sentence, case-insensitive, wraps around) with no replace controls in the way.
-- **Search & replace** — a separate panel, reachable from the overflow menu
+- **Search & replace** - a separate panel, reachable from the overflow menu
   (*Find & Replace*); find-next wraps around, replace-all is applied as one edit so a
   single Undo reverts it, and replace shows a "Replaced N occurrence(s)" confirmation.
   Both search panels share the same underlying match/wrap logic
   (`MainActivity.performSearch`) but are mutually exclusive in the UI.
-- **Code formatting (optional)** — `KotlinFormatter` re-indents raw Kotlin source based
-  on brace depth (menu → *Format Kotlin code*, shown only for `.kt`/`.kts` files). It's
+- **Code formatting (optional)** - `KotlinFormatter` re-indents raw Kotlin source based
+  on brace depth (menu -> *Format Kotlin code*, shown only for `.kt`/`.kts` files). It's
   a simple heuristic indenter, not a full tokenizer/parser.
-- **Undo / Redo** — see `UndoRedoManager`: every text change is recorded by a
+- **Undo / Redo** - see `UndoRedoManager`: every text change is recorded by a
   `TextWatcher` as *(position, removedText, insertedText)*. Undo replaces the
   inserted text back with the removed text; redo does the opposite. A flag
   (`isPerformingUndoRedo`) prevents undo operations from recording themselves.
@@ -101,24 +101,24 @@ Libraries used (see `app/build.gradle.kts`):
   block-comment forms) so a `//` inside a string literal (e.g. a URL) is consumed as
   part of the string match instead of being wrongly re-colored as a comment.
 - **Markdown**: patterns for headings, bold, italic, inline code, links, bullets,
-  quotes. The **preview panel** (menu → Markdown preview) is rendered by the
-  Markwon library (core module only — no tables/strikethrough/autolink extensions).
+  quotes. The **preview panel** (menu -> Markdown preview) is rendered by the
+  Markwon library (core module only - no tables/strikethrough/autolink extensions).
 
 ### Local history & fault tolerance
 - `AutoSaveManager` copies the editor buffer into `cache/autosave_buffer.txt`
   **every 10 seconds** (and on `onPause`).
-- The backup is cleared every time content is actually persisted to the real file —
-  after Save, Save As, Restore version, and Create snapshot — not just on a clean
+- The backup is cleared every time content is actually persisted to the real file -
+  after Save, Save As, Restore version, and Create snapshot - not just on a clean
   app exit, so the recovery dialog only ever appears when there is genuinely
   unsaved work.
-- Crash / process kill while there's unsaved text → backup survives, and the
+- Crash / process kill while there's unsaved text -> backup survives, and the
   next launch shows a *"Recovered unsaved work"* dialog offering to restore it.
 - Try it: type text without saving, then kill the app from Android Studio's
   Logcat "terminate" button (or `adb shell am kill com.example.texteditor`), reopen.
 
 ### Delta-based version control (the core requirement)
 - **Storage rule (no duplication):**
-  - Snapshot **1** stores the full text (`FileVersion.baseContent`) — the *base*.
+  - Snapshot **1** stores the full text (`FileVersion.baseContent`) - the *base*.
   - Snapshot **N > 1** stores **only a unified-diff patch** (`FileVersion.patchText`)
     computed against version N-1 with **java-diff-utils**.
   - Rebuilding version K = base text + apply patches of versions 2..K in order
@@ -127,17 +127,16 @@ Libraries used (see `app/build.gradle.kts`):
   A unique index on `(fileId, versionNumber)` plus wrapping snapshot creation in a
   Room transaction (`AppDatabase.withTransaction`) prevents two near-simultaneous
   "Create snapshot" taps from ever producing duplicate version numbers and
-  corrupting the patch chain. (Schema is at DB version 2 — `MIGRATION_1_2` adds the
+  corrupting the patch chain. (Schema is at DB version 2 - `MIGRATION_1_2` adds the
   index and de-duplicates any pre-existing rows first.)
-- **Diff view** — `DiffActivity` rebuilds versions N-1 and N and shows a
+- **Diff view** - `DiffActivity` rebuilds versions N-1 and N and shows a
   line-by-line comparison (green = added, red = removed), with a try/catch so a
   corrupted or unreadable patch chain shows a friendly error instead of crashing.
   The version list shows *how* each version is stored ("full text" vs "delta patch
   only") to make the storage saving visible in the demo.
-- **Rollback** — *Restore* rebuilds the chosen version's text, puts it in the
+- **Rollback** - *Restore* rebuilds the chosen version's text, puts it in the
   editor and writes it back to the file. History is kept; restoring then
   snapshotting simply creates a new version on top.
-- **Read-only flag** — menu → *Read-only* removes the EditText's key listener
+- **Read-only flag** - menu -> *Read-only* removes the EditText's key listener
   (typing blocked, copying still works), blocks Save/Replace/Format/Restore/
   Undo/Redo/Create-snapshot, and persists the lock in the `tracked_files` table.
-
