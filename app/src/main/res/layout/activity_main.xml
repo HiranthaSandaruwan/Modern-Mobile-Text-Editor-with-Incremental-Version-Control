@@ -207,13 +207,13 @@
             android:text="@string/new_file" />
 
         <Button
-            android:id="@+id/btn_open_file"
+            android:id="@+id/btn_open_files"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
             android:paddingStart="20dp"
-            android:text="@string/open_file" />
+            android:text="@string/open_files" />
 
         <View
             android:layout_width="match_parent"
@@ -242,22 +242,6 @@
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="4dp"
-            android:text="@string/all_files"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="@color/status_text" />
-
-        <ListView
-            android:id="@+id/all_files_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2" />
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

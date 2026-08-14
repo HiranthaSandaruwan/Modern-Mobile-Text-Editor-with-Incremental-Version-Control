@@ -7,8 +7,10 @@
     <string name="drawer_close">Close sidebar</string>
     <string name="new_file">New file</string>
     <string name="open_file">Open file</string>
+    <string name="open_files">Open Files</string>
     <string name="recent_files">RECENT FILES</string>
     <string name="all_files">ALL FILES</string>
+    <string name="manage_files">Manage Files</string>
     <string name="no_files_yet">No files yet – create one first</string>
     <string name="untitled">Untitled</string>
     <string name="hint_file_name">File name (e.g. notes.md)</string>

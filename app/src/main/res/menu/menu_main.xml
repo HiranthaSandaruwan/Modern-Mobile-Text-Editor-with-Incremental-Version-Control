@@ -53,7 +53,7 @@
 
     <item
         android:id="@+id/action_open"
-        android:title="@string/open_file" />
+        android:title="@string/open_files" />
 
     <item
         android:id="@+id/action_save_as"

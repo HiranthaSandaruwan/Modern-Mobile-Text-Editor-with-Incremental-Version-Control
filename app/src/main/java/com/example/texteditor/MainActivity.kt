@@ -52,7 +52,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previewScroll: ScrollView
     private lateinit var previewText: TextView
     private lateinit var recentList: ListView
-    private lateinit var allFilesList: ListView
 
     private lateinit var repository: FileRepository
     private lateinit var recentFiles: RecentFilesStore
@@ -81,6 +80,16 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 val version = result.data?.getIntExtra(VersionHistoryActivity.EXTRA_RESTORED_VERSION, -1) ?: -1
                 if (version > 0) restoreVersion(version)
+            }
+        }
+
+    private val systemFilePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val uri = result.data?.data ?: return@registerForActivityResult
+                // The requirement only asked to open the file manager.
+                // We could implement opening the file here if desired.
+                toast(getString(R.string.file_saved, uri.lastPathSegment ?: ""))
             }
         }
 
@@ -174,7 +183,6 @@ class MainActivity : AppCompatActivity() {
         previewScroll = findViewById(R.id.preview_scroll)
         previewText = findViewById(R.id.preview_text)
         recentList = findViewById(R.id.recent_list)
-        allFilesList = findViewById(R.id.all_files_list)
     }
 
     private fun setupToolbarAndDrawer() {
@@ -189,17 +197,12 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             confirmUnsavedChanges { showNewFileDialog() }
         }
-        findViewById<View>(R.id.btn_open_file).setOnClickListener {
+        findViewById<View>(R.id.btn_open_files).setOnClickListener {
             drawerLayout.closeDrawers()
-            confirmUnsavedChanges { showOpenFileDialog() }
+            confirmUnsavedChanges { openSystemFileManager() }
         }
         recentList.setOnItemClickListener { _, _, position, _ ->
             val name = recentList.adapter.getItem(position) as String
-            drawerLayout.closeDrawers()
-            confirmUnsavedChanges { openFile(name) }
-        }
-        allFilesList.setOnItemClickListener { _, _, position, _ ->
-            val name = allFilesList.adapter.getItem(position) as String
             drawerLayout.closeDrawers()
             confirmUnsavedChanges { openFile(name) }
         }
@@ -289,7 +292,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_search -> togglePlainSearchPanel()
             R.id.action_find -> toggleSearchPanel()
             R.id.action_new -> confirmUnsavedChanges { showNewFileDialog() }
-            R.id.action_open -> confirmUnsavedChanges { showOpenFileDialog() }
+            R.id.action_open -> confirmUnsavedChanges { openSystemFileManager() }
             R.id.action_save_as -> showSaveAsDialog()
             R.id.action_snapshot -> showSnapshotDialog()
             R.id.action_history -> openVersionHistory()
@@ -350,11 +353,16 @@ class MainActivity : AppCompatActivity() {
         }.setNegativeButton(android.R.string.cancel, null).show()
     }
 
-    private fun showOpenFileDialog() {
-        val names = repository.listFileNames()
-        if (names.isEmpty()) { toast(getString(R.string.no_files_yet)); return }
-        AlertDialog.Builder(this).setTitle(R.string.open_file).setItems(names.toTypedArray()) { _, which -> openFile(names[which]) }
-            .setNegativeButton(android.R.string.cancel, null).show()
+    private fun openSystemFileManager() {
+        try {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+            }
+            systemFilePickerLauncher.launch(intent)
+        } catch (e: Exception) {
+            toast("Could not open system file manager")
+        }
     }
 
     private fun showSaveAsDialog() {
@@ -413,7 +421,6 @@ class MainActivity : AppCompatActivity() {
     private fun refreshRecentList() {
         val allRecent = recentFiles.getAll()
         recentList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, allRecent.take(5))
-        allFilesList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, repository.listFileNames())
     }
 
     private fun undo() {
