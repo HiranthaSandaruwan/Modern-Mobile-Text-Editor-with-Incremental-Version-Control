@@ -138,7 +138,7 @@ Libraries used (see `app/build.gradle.kts`):
   corrupting the patch chain. (Schema is at DB version 2 - `MIGRATION_1_2` adds the
   index and de-duplicates any pre-existing rows first.)
 - **Diff view** - `DiffActivity` rebuilds versions N-1 and N and shows a
-  line-by-line comparison (green = added, red = removed), with a try/catch so a
+  line-by-line comparison (green = added, red = removed), with a try-catch so a
   corrupted or unreadable patch chain shows a friendly error instead of crashing.
   The version list shows *how* each version is stored ("full text" vs "delta patch
   only") to make the storage saving visible in the demo.
