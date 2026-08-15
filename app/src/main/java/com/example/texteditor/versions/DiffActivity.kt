@@ -20,15 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * Shows what one snapshot changed, line by line:
- *   green background = line added in this version
- *   red background   = line removed in this version
- *   no background    = unchanged line
- *
- * The two compared texts are rebuilt from the stored deltas:
- * "old" = version N-1 (empty for the first version), "new" = version N.
- */
+// Shows what changed in one snapshot: green = added lines, red = removed lines.
 class DiffActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +50,6 @@ class DiffActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // Rebuild both versions and calculate the diff on a background thread.
                 val spannable = withContext(Dispatchers.Default) {
                     val oldText =
                         if (versionNumber == 1) ""
@@ -73,7 +64,7 @@ class DiffActivity : AppCompatActivity() {
         }
     }
 
-    /** Converts the diff lines into one colored text block. */
+    // Turns the diff lines into one colored block of text.
     private fun buildColoredDiff(lines: List<VersionControlManager.DiffLine>): CharSequence {
         val builder = SpannableStringBuilder()
         for (line in lines) {

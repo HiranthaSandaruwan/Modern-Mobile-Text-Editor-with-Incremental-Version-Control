@@ -1,9 +1,6 @@
 package com.example.texteditor.editor
 
-/**
- * A simple code formatter for Kotlin.
- * Handles basic indentation based on curly braces.
- */
+// Auto-indents Kotlin code based on { and } braces.
 class KotlinFormatter {
 
     fun format(code: String): String {

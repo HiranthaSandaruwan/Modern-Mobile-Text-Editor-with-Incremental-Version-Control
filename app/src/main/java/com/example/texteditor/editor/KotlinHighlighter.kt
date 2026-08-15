@@ -5,10 +5,8 @@ import android.graphics.Color
 import android.text.Editable
 import java.util.regex.Pattern
 
-/**
- * Syntax highlighting for Kotlin.
- * Keywords are loaded from assets/kotlin_keywords.txt.
- */
+// Colors Kotlin code: keywords, numbers, annotations, strings, and comments.
+// Keywords are loaded from assets/kotlin_keywords.txt.
 class KotlinHighlighter(context: Context) : SyntaxHighlighter() {
 
     private val keywords: List<String> =
@@ -20,10 +18,8 @@ class KotlinHighlighter(context: Context) : SyntaxHighlighter() {
     private val numberPattern = Pattern.compile("\\b\\d+(\\.\\d+)?[fFL]?\\b")
     private val annotationPattern = Pattern.compile("@\\w+")
 
-    // Strings and comments are matched together, as ALTERNATIVES of one pattern, so the regex
-    // engine claims each character range only once. This stops a "//" that occurs inside a
-    // string literal (e.g. a URL like "https://example.com") from later being re-matched and
-    // re-colored as a comment by a separate, context-blind comment pattern.
+    // Strings and comments share one pattern so a "//" inside a string (like a URL) isn't
+    // later mistaken for a comment.
     private val stringOrCommentPattern = Pattern.compile(
         "\"\"\"[\\s\\S]*?\"\"\"" +               // triple-quoted strings
             "|\"(\\\\.|[^\"\\\\\\n])*\"" +       // double-quoted strings
@@ -39,7 +35,7 @@ class KotlinHighlighter(context: Context) : SyntaxHighlighter() {
         colorStringsAndComments(text)
     }
 
-    /** Colors each match of [stringOrCommentPattern] as a comment or a string, depending on which it is. */
+    // Colors each match as a comment or a string, depending on which it is.
     private fun colorStringsAndComments(text: Editable) {
         val matcher = stringOrCommentPattern.matcher(text)
         while (matcher.find()) {

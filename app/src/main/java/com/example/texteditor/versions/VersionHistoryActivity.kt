@@ -19,12 +19,8 @@ import com.example.texteditor.data.db.AppDatabase
 import com.example.texteditor.data.db.FileVersion
 import kotlinx.coroutines.launch
 
-/**
- * Shows all snapshots of the current file (newest first).
- * From here the user can:
- *  - open a line-by-line diff of any snapshot (DiffActivity),
- *  - restore the file to any snapshot (result is sent back to MainActivity).
- */
+// Lists every saved snapshot of the current file, newest first.
+// From here you can view a snapshot's diff or restore the file to it.
 class VersionHistoryActivity : AppCompatActivity() {
 
     private lateinit var versionManager: VersionControlManager
@@ -61,10 +57,8 @@ class VersionHistoryActivity : AppCompatActivity() {
         )
         recycler.adapter = adapter
 
-        // Load the snapshot list from the database (off the UI thread).
         lifecycleScope.launch {
             val versions = versionManager.getVersions(fileName)
-            // Show newest first.
             adapter.submitList(versions.sortedByDescending { it.versionNumber })
             emptyView.visibility = if (versions.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -83,8 +77,7 @@ class VersionHistoryActivity : AppCompatActivity() {
             .setTitle(R.string.restore_title)
             .setMessage(getString(R.string.restore_message, version.versionNumber, version.label))
             .setPositiveButton(R.string.restore) { _, _ ->
-                // Send the chosen version number back to MainActivity,
-                // which performs the actual restore.
+                // MainActivity does the actual restore, so just send the version number back.
                 val data = Intent().putExtra(EXTRA_RESTORED_VERSION, version.versionNumber)
                 setResult(RESULT_OK, data)
                 finish()

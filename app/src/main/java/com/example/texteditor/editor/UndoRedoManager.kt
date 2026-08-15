@@ -2,18 +2,7 @@ package com.example.texteditor.editor
 
 import android.text.Editable
 
-/**
- * A simple undo/redo system based on two in-memory stacks.
- *
- * Every time the user edits the text, MainActivity records ONE
- * [EditOperation] describing the change:
- *   - position:     where in the text the change happened
- *   - removedText:  what was deleted at that position
- *   - insertedText: what was inserted at that position
- *
- * Undo  = replace insertedText back with removedText.
- * Redo  = replace removedText with insertedText again.
- */
+// Keeps track of edits so they can be undone and redone.
 class UndoRedoManager {
 
     data class EditOperation(
@@ -25,18 +14,14 @@ class UndoRedoManager {
     private val undoStack = ArrayDeque<EditOperation>()
     private val redoStack = ArrayDeque<EditOperation>()
 
-    /**
-     * True while we are applying an undo/redo ourselves. MainActivity checks
-     * this flag so the resulting text change is not recorded again
-     * (otherwise undo would create an endless loop of new operations).
-     */
+    // True while undo/redo is running, so that change isn't recorded as a new edit.
     var isPerformingUndoRedo = false
         private set
 
     fun canUndo(): Boolean = undoStack.isNotEmpty()
     fun canRedo(): Boolean = redoStack.isNotEmpty()
 
-    /** Called for every user edit. A new edit clears the redo stack. */
+    // Records one edit. A new edit clears the redo history.
     fun record(operation: EditOperation) {
         undoStack.addLast(operation)
         redoStack.clear()
@@ -61,7 +46,7 @@ class UndoRedoManager {
         undoStack.addLast(op)
     }
 
-    /** Called when a different file is opened - history belongs to one session/file. */
+    // Called when a different file is opened, so old history doesn't carry over.
     fun clear() {
         undoStack.clear()
         redoStack.clear()

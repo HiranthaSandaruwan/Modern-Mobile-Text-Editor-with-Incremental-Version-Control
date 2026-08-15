@@ -2,9 +2,7 @@ package com.example.texteditor.data
 
 import android.content.Context
 
-/**
- * Remembers the recently opened file names.
- */
+// Remembers the names of recently opened files.
 class RecentFilesStore(context: Context) {
 
     private val prefs = context.getSharedPreferences("recent_files", Context.MODE_PRIVATE)

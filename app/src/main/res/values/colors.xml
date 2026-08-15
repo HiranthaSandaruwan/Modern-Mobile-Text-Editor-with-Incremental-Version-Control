@@ -10,5 +10,6 @@
     <color name="divider">#E0E0E0</color>
     <color name="diff_added">#C8E6C9</color>
     <color name="diff_removed">#FFCDD2</color>
+    <color name="search_highlight">#FFF59D</color>
     <color name="ic_launcher_background">#1565C0</color>
 </resources>

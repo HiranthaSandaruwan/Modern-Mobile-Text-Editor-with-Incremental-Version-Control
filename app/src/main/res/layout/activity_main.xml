@@ -22,8 +22,7 @@
             app:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.Material3.Light" />
 
-        <!-- Standalone "Search" panel: search only, no replace fields. Separate from the
-             Find & Replace panel below so plain searching has its own dedicated entry point. -->
+        <!-- Simple search bar, no replace fields -->
         <LinearLayout
             android:id="@+id/plain_search_panel"
             android:layout_width="match_parent"
@@ -236,11 +235,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
 
     </LinearLayout>
 

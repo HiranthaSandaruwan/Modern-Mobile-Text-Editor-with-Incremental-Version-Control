@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Kotlin Text Editor</string>
+    <string name="app_name">Text Editor</string>
 
     <!-- Drawer / files -->
     <string name="drawer_open">Open sidebar</string>
     <string name="drawer_close">Close sidebar</string>
     <string name="new_file">New file</string>
-    <string name="open_file">Open file</string>
     <string name="open_files">Open Files</string>
     <string name="recent_files">RECENT FILES</string>
-    <string name="all_files">ALL FILES</string>
-    <string name="manage_files">Manage Files</string>
-    <string name="no_files_yet">No files yet – create one first</string>
     <string name="untitled">Untitled</string>
     <string name="hint_file_name">File name (e.g. notes.md)</string>
     <string name="invalid_file_name">Invalid file name</string>
     <string name="file_already_exists">%1$s already exists</string>
     <string name="error_opening_file">Could not open %1$s</string>
+    <string name="error_saving_file">Could not save %1$s</string>
+    <string name="error_loading_files">Could not load the file list</string>
+    <string name="title_files">Saved Files</string>
+    <string name="no_files_saved">No files saved yet.\nUse \"New file\" in the sidebar to create one.</string>
+    <string name="open_in_file_manager">Open in device file manager</string>
+
+    <!-- Storage folder -->
+    <string name="choose_folder_title">Choose a folder for your files</string>
+    <string name="choose_folder_message">Pick a folder on your device to save your documents in. You can browse to it any time from \"Open Files\".</string>
+    <string name="choose_folder">Choose folder</string>
+    <string name="no_folder_chosen">No folder chosen yet</string>
+    <string name="could_not_open_file_manager">Could not open the file manager</string>
 
     <!-- Editing / saving -->
     <string name="editor_hint">Start typing, or open a file from the sidebar…</string>
@@ -35,6 +43,7 @@
     <string name="file_is_read_only">This file is locked as read-only</string>
     <string name="save_before_read_only">Save the file first to lock it</string>
     <string name="markdown_preview">Markdown preview</string>
+    <string name="exit_preview_to_replace">Exit preview to replace text</string>
     <string name="format_code">Format Kotlin code</string>
     <string name="formatting_done">Code formatted</string>
     <string name="status_modified">Modified</string>

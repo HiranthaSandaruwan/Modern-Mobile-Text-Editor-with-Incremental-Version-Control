@@ -4,9 +4,7 @@ import android.graphics.Color
 import android.text.Editable
 import java.util.regex.Pattern
 
-/**
- * Syntax highlighting for Markdown.
- */
+// Colors Markdown text: headings, bold, italic, links, code, quotes, and bullets.
 class MarkdownHighlighter : SyntaxHighlighter() {
 
     private val headingPattern = Pattern.compile("^#{1,6}\\s.*$", Pattern.MULTILINE)

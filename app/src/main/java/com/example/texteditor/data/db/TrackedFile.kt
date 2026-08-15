@@ -4,10 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-/**
- * One row per document that the app knows about.
- * Stores per-file settings: the read-only lock and the text encoding.
- */
+// One row per file: whether it's locked read-only and which text encoding it uses.
 @Entity(
     tableName = "tracked_files",
     indices = [Index(value = ["name"], unique = true)]

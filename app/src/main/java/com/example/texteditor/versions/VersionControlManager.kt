@@ -7,9 +7,7 @@ import com.example.texteditor.data.db.TrackedFile
 import com.github.difflib.DiffUtils
 import com.github.difflib.UnifiedDiffUtils
 
-/**
- * Delta-based version control system.
- */
+// Stores file versions as deltas (diffs) instead of full copies, to save space.
 class VersionControlManager(private val db: AppDatabase) {
 
     private val dao = db.versionDao()
@@ -19,9 +17,7 @@ class VersionControlManager(private val db: AppDatabase) {
         enum class Type { CONTEXT, ADDED, REMOVED }
     }
 
-    // Wrapped in a transaction: two concurrent calls for the same brand-new file name could
-    // otherwise both see "no row yet" and both try to insert it, throwing on the unique index
-    // on TrackedFile.name. The transaction serializes them so only one insert happens.
+    // Transaction stops two calls for the same new file from both trying to insert it at once.
     suspend fun getOrCreateFile(name: String): TrackedFile = db.withTransaction {
         dao.getFileByName(name)?.let { return@withTransaction it }
         dao.insertFile(TrackedFile(name = name))
@@ -43,11 +39,7 @@ class VersionControlManager(private val db: AppDatabase) {
         return dao.getVersionsForFile(file.id)
     }
 
-    // Wrapped in a transaction so the "read the current version count, then insert the next
-    // version number" sequence is atomic. Without this, two near-simultaneous calls (e.g. a
-    // fast double-tap on "Create snapshot") could both read the same count and insert two rows
-    // with the same versionNumber, corrupting the patch chain that rebuildText() relies on. The
-    // unique index on (fileId, versionNumber) is a second line of defense if that ever happens.
+    // Transaction stops two quick taps on "Create snapshot" from both getting the same version number.
     suspend fun createSnapshot(fileName: String, label: String, currentText: String): SnapshotResult = db.withTransaction {
         val file = getOrCreateFile(fileName)
         val versions = dao.getVersionsForFile(file.id)

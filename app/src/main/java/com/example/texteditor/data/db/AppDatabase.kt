@@ -19,12 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
                 .build().also { instance = it }
         }
 
-        /**
-         * Adds a unique index on (fileId, versionNumber) so the version-number chain can never
-         * contain duplicates. If a pre-existing install somehow already has duplicate rows
-         * (from the race-condition bug this migration fixes), the oldest copy of each duplicate
-         * pair is kept and the rest are removed before the unique index is created.
-         */
+        // Removes any duplicate version rows, then makes duplicates impossible going forward.
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(

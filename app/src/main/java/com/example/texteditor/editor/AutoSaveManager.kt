@@ -5,9 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import java.io.File
 
-/**
- * Periodically backs up the active buffer for crash recovery.
- */
+// Saves a copy of the current text every 10 seconds, so it can be recovered after a crash.
 class AutoSaveManager(
     context: Context,
     private val currentState: () -> Pair<String?, String>
@@ -30,6 +28,7 @@ class AutoSaveManager(
 
     fun saveNow() {
         val (fileName, text) = currentState()
+        if (fileName == null && text.isEmpty()) return
         backupFile.writeText(text)
         prefs.edit().putString("file", fileName).putBoolean("has", true).apply()
     }

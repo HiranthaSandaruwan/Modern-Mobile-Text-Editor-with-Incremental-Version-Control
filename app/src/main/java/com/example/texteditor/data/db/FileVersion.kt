@@ -4,16 +4,12 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-/**
- * One row per snapshot (version) of a file.
- */
+// One row per saved snapshot of a file.
 @Entity(
     tableName = "file_versions",
     indices = [
         Index(value = ["fileId"]),
-        // Guarantees the version-number chain can never contain duplicates for a file, even if
-        // two "create snapshot" calls ever raced each other - the second insert throws instead
-        // of silently corrupting rebuildText()'s "versions[i] == version (i+1)" assumption.
+        // Stops a file from ever getting two versions with the same number.
         Index(value = ["fileId", "versionNumber"], unique = true)
     ]
 )
