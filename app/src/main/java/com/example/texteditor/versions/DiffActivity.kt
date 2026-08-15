@@ -1,6 +1,5 @@
 package com.example.texteditor.versions
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -10,6 +9,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -102,7 +102,7 @@ class DiffActivity : AppCompatActivity() {
         const val EXTRA_VERSION_NUMBER = "extra_version_number"
         const val EXTRA_VERSION_LABEL = "extra_version_label"
 
-        private val ADDED_BACKGROUND = Color.parseColor("#C8E6C9")   // light green
-        private val REMOVED_BACKGROUND = Color.parseColor("#FFCDD2") // light red
+        private val ADDED_BACKGROUND = "#C8E6C9".toColorInt()   // light green
+        private val REMOVED_BACKGROUND = "#FFCDD2".toColorInt() // light red
     }
 }

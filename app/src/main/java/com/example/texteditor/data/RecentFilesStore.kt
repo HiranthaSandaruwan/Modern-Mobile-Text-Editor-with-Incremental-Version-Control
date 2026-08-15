@@ -1,6 +1,7 @@
 package com.example.texteditor.data
 
 import android.content.Context
+import androidx.core.content.edit
 
 // Remembers the names of recently opened files.
 class RecentFilesStore(context: Context) {
@@ -14,7 +15,7 @@ class RecentFilesStore(context: Context) {
 
     fun add(name: String) {
         val updated = (listOf(name) + getAll().filter { it != name }).take(MAX_ENTRIES)
-        prefs.edit().putString(KEY, updated.joinToString("\n")).apply()
+        prefs.edit { putString(KEY, updated.joinToString("\n")) }
     }
 
     companion object {

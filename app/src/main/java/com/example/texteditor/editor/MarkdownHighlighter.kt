@@ -1,7 +1,7 @@
 package com.example.texteditor.editor
 
-import android.graphics.Color
 import android.text.Editable
+import androidx.core.graphics.toColorInt
 import java.util.regex.Pattern
 
 // Colors Markdown text: headings, bold, italic, links, code, quotes, and bullets.
@@ -26,12 +26,12 @@ class MarkdownHighlighter : SyntaxHighlighter() {
     }
 
     companion object {
-        private val HEADING_COLOR = Color.parseColor("#0033B3")
-        private val BOLD_COLOR = Color.parseColor("#212121")
-        private val ITALIC_COLOR = Color.parseColor("#424242")
-        private val CODE_COLOR = Color.parseColor("#00796B")
-        private val LINK_COLOR = Color.parseColor("#1565C0")
-        private val BULLET_COLOR = Color.parseColor("#E65100")
-        private val QUOTE_COLOR = Color.parseColor("#616161")
+        private val HEADING_COLOR = "#0033B3".toColorInt()
+        private val BOLD_COLOR = "#212121".toColorInt()
+        private val ITALIC_COLOR = "#424242".toColorInt()
+        private val CODE_COLOR = "#00796B".toColorInt()
+        private val LINK_COLOR = "#1565C0".toColorInt()
+        private val BULLET_COLOR = "#E65100".toColorInt()
+        private val QUOTE_COLOR = "#616161".toColorInt()
     }
 }

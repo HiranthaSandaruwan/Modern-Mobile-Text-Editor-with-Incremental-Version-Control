@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import java.io.File
 import java.io.FileNotFoundException
@@ -19,8 +21,8 @@ class FileRepository(private val context: Context) {
     private val legacyDocumentsDir = File(context.filesDir, "documents")
 
     var folderUri: Uri?
-        get() = prefs.getString(KEY_FOLDER_URI, null)?.let { Uri.parse(it) }
-        private set(value) = prefs.edit().putString(KEY_FOLDER_URI, value?.toString()).apply()
+        get() = prefs.getString(KEY_FOLDER_URI, null)?.toUri()
+        private set(value) = prefs.edit { putString(KEY_FOLDER_URI, value?.toString()) }
 
     // True once a folder is picked and we still have permission to use it.
     fun hasFolder(): Boolean {
@@ -105,7 +107,7 @@ class FileRepository(private val context: Context) {
         if (prefs.getBoolean("samples_created", false)) return false
         if (!exists("Welcome.md")) saveText("Welcome.md", SAMPLE_MARKDOWN)
         if (!exists("HelloWorld.kt")) saveText("HelloWorld.kt", SAMPLE_KOTLIN)
-        prefs.edit().putBoolean("samples_created", true).apply()
+        prefs.edit { putBoolean("samples_created", true) }
         return true
     }
 

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.example.texteditor.R
@@ -61,10 +62,10 @@ class FilesActivity : AppCompatActivity() {
             try {
                 val names = withContext(Dispatchers.IO) { repository.listFileNames() }
                 fileList.adapter = ArrayAdapter(this@FilesActivity, android.R.layout.simple_list_item_1, names)
-                emptyView.visibility = if (names.isEmpty()) View.VISIBLE else View.GONE
+                emptyView.isVisible = names.isEmpty()
             } catch (e: Exception) {
                 toast(getString(R.string.error_loading_files))
-                emptyView.visibility = View.VISIBLE
+                emptyView.isVisible = true
             }
         }
     }

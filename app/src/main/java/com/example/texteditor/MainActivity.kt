@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -298,8 +299,8 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 when {
                     drawerLayout.isDrawerOpen(findViewById(R.id.drawer_panel)) -> drawerLayout.closeDrawers()
-                    plainSearchPanel.visibility == View.VISIBLE -> plainSearchPanel.visibility = View.GONE
-                    searchPanel.visibility == View.VISIBLE -> searchPanel.visibility = View.GONE
+                    plainSearchPanel.isVisible -> plainSearchPanel.isVisible = false
+                    searchPanel.isVisible -> searchPanel.isVisible = false
                     isModified -> AlertDialog.Builder(this@MainActivity)
                         .setTitle(R.string.unsaved_changes_title)
                         .setMessage(R.string.exit_without_saving)
@@ -539,13 +540,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupPlainSearchPanel() {
         findViewById<View>(R.id.btn_plain_search_next).setOnClickListener { searchNext() }
-        findViewById<View>(R.id.btn_close_plain_search).setOnClickListener { plainSearchPanel.visibility = View.GONE }
+        findViewById<View>(R.id.btn_close_plain_search).setOnClickListener { plainSearchPanel.isVisible = false }
     }
 
     private fun togglePlainSearchPanel() {
-        if (searchPanel.visibility == View.VISIBLE) searchPanel.visibility = View.GONE
-        plainSearchPanel.visibility = if (plainSearchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        if (plainSearchPanel.visibility == View.VISIBLE) plainSearchInput.requestFocus()
+        searchPanel.isVisible = false
+        plainSearchPanel.isVisible = !plainSearchPanel.isVisible
+        if (plainSearchPanel.isVisible) plainSearchInput.requestFocus()
     }
 
     private fun searchNext() = performSearch(plainSearchInput.text.toString())
@@ -554,13 +555,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.btn_find_next).setOnClickListener { findNext() }
         findViewById<View>(R.id.btn_replace).setOnClickListener { replaceCurrent() }
         findViewById<View>(R.id.btn_replace_all).setOnClickListener { replaceAll() }
-        findViewById<View>(R.id.btn_close_search).setOnClickListener { searchPanel.visibility = View.GONE }
+        findViewById<View>(R.id.btn_close_search).setOnClickListener { searchPanel.isVisible = false }
     }
 
     private fun toggleSearchPanel() {
-        if (plainSearchPanel.visibility == View.VISIBLE) plainSearchPanel.visibility = View.GONE
-        searchPanel.visibility = if (searchPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        if (searchPanel.visibility == View.VISIBLE) searchInput.requestFocus()
+        plainSearchPanel.isVisible = false
+        searchPanel.isVisible = !searchPanel.isVisible
+        if (searchPanel.isVisible) searchInput.requestFocus()
     }
 
     private fun findNext() = performSearch(searchInput.text.toString())
@@ -671,8 +672,8 @@ class MainActivity : AppCompatActivity() {
             previewText.setText(previewText.text, TextView.BufferType.SPANNABLE)
             previewHighlightSpan = null
             previewSearchFrom = 0
-            previewScroll.visibility = View.VISIBLE
-            editor.visibility = View.GONE
+            previewScroll.isVisible = true
+            editor.isVisible = false
             isPreviewVisible = true
         }
         invalidateOptionsMenu()
@@ -681,8 +682,8 @@ class MainActivity : AppCompatActivity() {
     private fun hidePreview() {
         clearPreviewHighlight()
         previewSearchFrom = 0
-        previewScroll.visibility = View.GONE
-        editor.visibility = View.VISIBLE
+        previewScroll.isVisible = false
+        editor.isVisible = true
         isPreviewVisible = false
     }
 

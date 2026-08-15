@@ -1,8 +1,8 @@
 package com.example.texteditor.editor
 
 import android.content.Context
-import android.graphics.Color
 import android.text.Editable
+import androidx.core.graphics.toColorInt
 import java.util.regex.Pattern
 
 // Colors Kotlin code: keywords, numbers, annotations, strings, and comments.
@@ -46,10 +46,10 @@ class KotlinHighlighter(context: Context) : SyntaxHighlighter() {
     }
 
     companion object {
-        private val KEYWORD_COLOR = Color.parseColor("#0033B3")
-        private val NUMBER_COLOR = Color.parseColor("#1750EB")
-        private val ANNOTATION_COLOR = Color.parseColor("#9E880D")
-        private val STRING_COLOR = Color.parseColor("#067D17")
-        private val COMMENT_COLOR = Color.parseColor("#8C8C8C")
+        private val KEYWORD_COLOR = "#0033B3".toColorInt()
+        private val NUMBER_COLOR = "#1750EB".toColorInt()
+        private val ANNOTATION_COLOR = "#9E880D".toColorInt()
+        private val STRING_COLOR = "#067D17".toColorInt()
+        private val COMMENT_COLOR = "#8C8C8C".toColorInt()
     }
 }

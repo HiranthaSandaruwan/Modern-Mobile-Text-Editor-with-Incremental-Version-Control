@@ -3,6 +3,7 @@ package com.example.texteditor.editor
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import androidx.core.content.edit
 import java.io.File
 
 // Saves a copy of the current text every 10 seconds, so it can be recovered after a crash.
@@ -30,7 +31,7 @@ class AutoSaveManager(
         val (fileName, text) = currentState()
         if (fileName == null && text.isEmpty()) return
         backupFile.writeText(text)
-        prefs.edit().putString("file", fileName).putBoolean("has", true).apply()
+        prefs.edit { putString("file", fileName); putBoolean("has", true) }
     }
 
     fun hasBackup(): Boolean = prefs.getBoolean("has", false) && backupFile.exists()
@@ -39,7 +40,7 @@ class AutoSaveManager(
 
     fun clearBackup() {
         backupFile.delete()
-        prefs.edit().putBoolean("has", false).remove("file").apply()
+        prefs.edit { putBoolean("has", false); remove("file") }
     }
 
     companion object {

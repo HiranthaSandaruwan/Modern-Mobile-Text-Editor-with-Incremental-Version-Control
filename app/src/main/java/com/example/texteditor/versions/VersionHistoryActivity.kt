@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,7 +61,7 @@ class VersionHistoryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val versions = versionManager.getVersions(fileName)
             adapter.submitList(versions.sortedByDescending { it.versionNumber })
-            emptyView.visibility = if (versions.isEmpty()) View.VISIBLE else View.GONE
+            emptyView.isVisible = versions.isEmpty()
         }
     }
 
