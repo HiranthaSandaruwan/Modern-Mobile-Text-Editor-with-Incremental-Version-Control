@@ -124,7 +124,7 @@ Libraries used (see `app/build.gradle.kts`):
 - Try it: type text without saving, then kill the app from Android Studio's
   Logcat "terminate" button (or `adb shell am kill com.example.texteditor`), reopen.
 
-### Delta-based version control (the core requirement)
+### Delta-based version control (core requirement)
 - **Storage rule (no duplication):**
   - Snapshot **1** stores the full text (`FileVersion.baseContent`) - the *base*.
   - Snapshot **N > 1** stores **only a unified-diff patch** (`FileVersion.patchText`)
